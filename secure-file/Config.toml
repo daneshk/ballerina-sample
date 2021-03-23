@@ -1,0 +1,3 @@
+[sfile]
+keyFile = "resources/private.key"
+certFile = "resources/public.crt"
