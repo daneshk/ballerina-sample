@@ -2,14 +2,14 @@ import ballerina/crypto;
 import ballerina/io;
 import ballerina/random;
 
-byte[16] rsaKeyArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+byte[16] rsaKeyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 # Module init function.
 # 
 # + return - an error if we encounter an issue while decoding the private key
 function init() returns error? {
     foreach var i in 0 ... 15 {
-        rsaKeyArr[i] = <byte>(check random:createIntInRange(0, 255));
+        rsaKeyArray[i] = <byte>(check random:createIntInRange(0, 255));
     }
 }
 
@@ -18,8 +18,8 @@ function init() returns error? {
 # + path - The path of the file.
 # + return - The entire file content as a string or an error.  
 public function fileReadString(string path) returns string|error {
-    string fileReadStringResult = check io:fileReadString(path);
-    byte[] decryptRsaEcb = check crypto:decryptAesEcb(fileReadStringResult.toBytes(), rsaKeyArr);
+    byte[] fileReadResult = check io:fileReadBytes(path);
+    byte[] decryptRsaEcb = check crypto:decryptAesEcb(fileReadResult, rsaKeyArray);
     return string:fromBytes(decryptRsaEcb);
 }
 
@@ -31,6 +31,6 @@ public function fileReadString(string path) returns string|error {
 # + option - To indicate whether to overwrite or append the given content  
 # + return - Return Value Description
 public function fileWriteString(string path, string content, io:FileWriteOption option = io:OVERWRITE) returns error? {
-    byte[] encryptRsaEcb = check crypto:encryptAesEcb(content.toBytes(), rsaKeyArr);
-    check io:fileWriteString(path, check string:fromBytes(encryptRsaEcb), option);
+    byte[] encryptRsaEcb = check crypto:encryptAesEcb(content.toBytes(), rsaKeyArray);
+    check io:fileWriteBytes(path, encryptRsaEcb, option);
 }
